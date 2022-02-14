@@ -1,5 +1,5 @@
 [workspace]
 members = [
 "uniffi_swiftpkg_gen",
-"examples/gixguardkit_rust"
+"examples/gixguardkit_rust",
 ]
