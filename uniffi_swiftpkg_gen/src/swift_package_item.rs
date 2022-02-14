@@ -149,24 +149,39 @@ impl SwiftPackageItem {
         content.push_str(format!("// Swift Package: {}\n\n", self.framework_item.swift_package_name).as_str());
         content.push_str("import PackageDescription;\n\n");
         content.push_str("let package = Package(\n");
-        content.push_str(format!("{}name: \"{}\",\n", String::build_whitespaces(1), self.framework_item.swift_package_name).as_str());
-        content.push_str(format!("{}platforms: [\n", String::build_whitespaces(1)).as_str());
-        content.push_str(format!("{}.iOS(.v13),\n", String::build_whitespaces(2)).as_str());
-        content.push_str(format!("{}.macOS(SupportedPlatform.MacOSVersion.v10_10)\n", String::build_whitespaces(2)).as_str());
-        content.push_str(format!("{}],\n", String::build_whitespaces(2)).as_str());
-        content.push_str(format!("{}products: [\n", String::build_whitespaces(1)).as_str());
-        content.push_str(format!("{}.library(\n", String::build_whitespaces(2)).as_str());
-        content.push_str(format!("{}name: \"{}\",\n", String::build_whitespaces(3), self.framework_item.swift_package_name).as_str());
-        content.push_str(format!("{}targets: [\"{}\"]\n", String::build_whitespaces(3), self.framework_item.swift_package_name).as_str());
+        content.push_str(format!("{}name: \"{}\",\n", String::build_whitespaces(1),
+                                 self.framework_item.swift_package_name).as_str());
+        content.push_str(format!("{}platforms: [\n",
+                                 String::build_whitespaces(1)).as_str());
+        content.push_str(format!("{}.iOS(.v13),\n",
+                                 String::build_whitespaces(2)).as_str());
+        content.push_str(format!("{}.macOS(SupportedPlatform.MacOSVersion.v10_10)\n",
+                                 String::build_whitespaces(2)).as_str());
+        content.push_str(format!("{}],\n",
+                                 String::build_whitespaces(2)).as_str());
+        content.push_str(format!("{}products: [\n",
+                                 String::build_whitespaces(1)).as_str());
+        content.push_str(format!("{}.library(\n",
+                                 String::build_whitespaces(2)).as_str());
+        content.push_str(format!("{}name: \"{}\",\n",
+                                 String::build_whitespaces(3),
+                                 self.framework_item.swift_package_name).as_str());
+        content.push_str(format!("{}targets: [\"{}\"]\n",
+                                 String::build_whitespaces(3),
+                                 self.framework_item.swift_package_name).as_str());
         content.push_str(format!("{})\n", String::build_whitespaces(2)).as_str());
         content.push_str(format!("{}],\n", String::build_whitespaces(1)).as_str());
-        content.push_str(format!("{}dependencies: [\n", String::build_whitespaces(1)).as_str());
-        content.push_str(format!("{}// Dependencies declare other packages that this package depends on.\n", String::build_whitespaces(2)).as_str());
-        content.push_str(format!("{}// .package(url: /* package url */, from: \"1.0.0\"),\n", String::build_whitespaces(2)).as_str());
+        content.push_str(format!("{}dependencies: [\n",
+                                 String::build_whitespaces(1)).as_str());
+        content.push_str(format!("{}// Dependencies declare other packages that this package depends on.\n",
+                                 String::build_whitespaces(2)).as_str());
+        content.push_str(format!("{}// .package(url: /* package url */, from: \"1.0.0\"),\n",
+                                 String::build_whitespaces(2)).as_str());
         content.push_str(format!("{}],\n", String::build_whitespaces(1)).as_str());
-        content.push_str(format!("{}targets: [\n", String::build_whitespaces(1)).as_str());
+        content.push_str(format!("{}targets: [\n",
+                                 String::build_whitespaces(1)).as_str());
 
-        content.push_str(format!("{}.systemLibrary(name: \"{}\", path: \"./{}\", pkgConfig: nil, providers: []),\n",
+        content.push_str(format!("{}.systemLibrary(name: \"sys_lib_{}\", path: \"./{}\", pkgConfig: nil, providers: []),\n",
                                  String::build_whitespaces(2),
                                  self.framework_item.swift_package_name.to_lowercase(),
                                  diff_paths(&self.headers_dir(), &self.swift_package_dir() )
@@ -183,44 +198,43 @@ impl SwiftPackageItem {
             self.framework_item.xc_frameworks_uri.file_name().unwrap().to_str().unwrap()
         ).as_str());
 
-        content.push_str(format!("{}.target(\n", String::build_whitespaces(2)).as_str());
+        content.push_str(format!("{}.target(\n",
+                                 String::build_whitespaces(2)).as_str());
 
         content.push_str(format!("{}name: \"{}\",\n",
                                  String::build_whitespaces(3),
                                  self.framework_item.swift_package_name).as_str());
 
-        content.push_str(format!("{}dependencies: [\n", String::build_whitespaces(3)).as_str());
+        content.push_str(format!("{}dependencies: [\n",
+                                 String::build_whitespaces(3)).as_str());
 
         // Define system library here
-        content.push_str(format!("{}.target(name: \"{}\", condition: .when(platforms: [.iOS, .macOS])),\n",
+        content.push_str(format!("{}.target(name: \"sys_lib_{}\", condition: .when(platforms: [.iOS, .macOS])),\n",
                                  String::build_whitespaces(4),
-                                 self.framework_item.swift_package_name.to_lowercase())
-            .as_str());
+                                 self.framework_item.swift_package_name.to_lowercase()).as_str());
 
         // Define binaryTarget dependency
         content.push_str(format!("{}.target(name: \"lib_{}_xc\")\n",
                                  String::build_whitespaces(4),
-                                 self.framework_item.swift_package_name.to_lowercase())
-            .as_str());
+                                 self.framework_item.swift_package_name.to_lowercase()).as_str());
 
         content.push_str(format!("{}],\n", String::build_whitespaces(3)).as_str());
 
-        content.push_str(format!("{}cxxSettings: [.headerSearchPath(\"Headers\")]\n", String::build_whitespaces(3)).as_str());
+        content.push_str(format!("{}cxxSettings: [.headerSearchPath(\"Headers\")]\n",
+                                 String::build_whitespaces(3)).as_str());
 
         content.push_str(format!("{}),\n", String::build_whitespaces(2)).as_str());
 
-        content.push_str(format!("{}.testTarget(\n", String::build_whitespaces(2)).as_str());
+        content.push_str(format!("{}.testTarget(\n",
+                                 String::build_whitespaces(2)).as_str());
         content.push_str(format!("{}name: \"{}Tests\",\n",
                                  String::build_whitespaces(3),
-                                 self.framework_item.swift_package_name
-        ).as_str());
+                                 self.framework_item.swift_package_name).as_str());
         content.push_str(format!("{}dependencies: [\"{}\"]\n",
                                  String::build_whitespaces(3),
-                                 self.framework_item.swift_package_name
-        ).as_str());
+                                 self.framework_item.swift_package_name).as_str());
 
         content.push_str(format!("{}),\n", String::build_whitespaces(2)).as_str());
-
         content.push_str(format!("{}]\n", String::build_whitespaces(1)).as_str());
         content.push_str(")\n");
 

@@ -7,6 +7,7 @@ mod swift_package_item;
 mod ext;
 mod command_builder;
 mod shared_constants;
+mod types;
 
 use std::env;
 use cargo_package::*;
