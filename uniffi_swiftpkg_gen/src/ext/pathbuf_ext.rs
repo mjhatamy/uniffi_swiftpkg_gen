@@ -1,6 +1,6 @@
 use std::path::{ PathBuf };
 use super::build_file_structure_trait::*;
-use std::fs::{ create_dir, create_dir_all, File };
+use std::fs::{ create_dir_all, File };
 use std::io::Write;
 
 impl BuildFileStructure for PathBuf {
