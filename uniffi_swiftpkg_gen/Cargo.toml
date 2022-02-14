@@ -7,6 +7,7 @@ authors = ["Jacob Hatami <mjhatamy@gmail.com>"]
 description = "Xcode swift package framework generator/updater tool for rust UniFFI"
 homepage = "https://github.com/mjhatamy/uniffi_swiftpkg_gen"
 keywords = ["ffi", "bindgen", "xcode", "swift", "swift_package", "spm"]
+publish = true
 
 [dependencies]
 colored = "2.0.0"

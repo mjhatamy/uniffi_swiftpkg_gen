@@ -1,0 +1,4 @@
+# Note that this `release.toml` exists to capture things that must only be
+# done once per workspace - but all other config exists in [../release.toml](../release.toml).
+
+tag = true
