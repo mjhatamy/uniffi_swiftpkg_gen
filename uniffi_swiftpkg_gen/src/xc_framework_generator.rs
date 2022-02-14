@@ -50,24 +50,20 @@ struct XCFrameworkBuildItems {
 pub(crate) struct XCFrameworkBuilder {
     command: CommandBuilder,
     //host_arch: String,
-    crate_package: CargoPackage
+    crate_package: CargoPackage,
+    build_dir: String,
 }
 
 impl XCFrameworkBuilder {
     #[allow(unused)]
     pub(crate) fn new(crate_package: CargoPackage) -> Self {
         let command_builder =  CommandBuilder::new();
-
-        // let host_arch = command_builder
-        //     .args(["uname -m"])
-        //     .expect("Unable to get system architecture. Check your system if any shell is installed and 'uname -m' is working")
-        //     .utf8_string().first()
-        //     .unwrap().clone();
-
+        let crate_name = crate_package.crate_name.clone();
         let inst = XCFrameworkBuilder {
             command: command_builder,
             //host_arch,
-            crate_package
+            crate_package,
+            build_dir: format!("/tmp/xcframework-{}", crate_name)
         };
         inst.init();
         inst
@@ -214,11 +210,9 @@ impl XCFrameworkBuilder {
     #[allow(unused)]
     fn build_lipo(&self, os: &str, build_type: &BuildType, targets_paths: Vec<String>) -> String {
         let target_dir = format!("{}/target/universal/{}/{}/",
-                                 self.crate_package.crate_dir.to_str().unwrap(),
-                                 build_type, os);
+                                 self.crate_package.crate_dir.to_str().unwrap(), build_type, os);
         let target_uri = format!("{}/target/universal/{}/{}/lib{}.a",
-                           self.crate_package.crate_dir.to_str().unwrap(),
-                                 build_type, os,
+                           self.crate_package.crate_dir.to_str().unwrap(), build_type, os,
                            self.crate_package.target_name);
 
         let mut target_str = String::new();
@@ -261,30 +255,26 @@ impl XCFrameworkBuilder {
     }
 
     #[allow(unused)]
-    fn compile_for_target(&self, target: &str, build_types: BuildType) -> String {
-        let target_dir = format!("{}/target",
-                           self.crate_package.crate_dir.to_str().unwrap());
+    fn compile_for_target(&self, target: &str, build_type: BuildType) -> String {
+        let target_dir = format!("{}/target", self.build_dir);
 
         // Skipping builder is important to eliminate the cyclic build process execution.
         let command_code = format!("{}=true $HOME/.cargo/bin/cargo build --locked -p {} --lib {} --target {} --target-dir {} --manifest-path {}",
-                                   SKIP_UNIFFI_SWIFTPKG_GEN,
-                                   self.crate_package.crate_name,
-                                   if build_types == BuildType::Debug { "" } else { "--release" },
-                                   target, target_dir, self.crate_package.crate_dir.join("Cargo.toml").to_str().unwrap()
+                                   SKIP_UNIFFI_SWIFTPKG_GEN, self.crate_package.crate_name,
+                                   if build_type == BuildType::Debug { "" } else { "--release" },
+                                   target, target_dir,
+                                   self.crate_package.crate_dir
+                                       .join("Cargo.toml").to_str().unwrap()
         );
         let status = self.command.args_stream([command_code.as_str()]);
         if !status.success() {
             eprintln!("Failed to compile crate name: {}, lib_name: {}, target architecture: {}",
-                             self.crate_package.crate_name,
-                             self.crate_package.target_name, target);
+                             self.crate_package.crate_name, self.crate_package.target_name, target);
             eprintln!("{}{}", "Argument failed with error: ".red(), status);
             exit(1);
         }
 
-        let path = format!("{}/target/{}/{}/lib{}.a",
-                self.crate_package.crate_dir.to_str().unwrap(),
-                target, build_types, self.crate_package.target_name);
-        path
+        format!("{}/{}/{}/lib{}.a", target_dir, target, build_type, self.crate_package.target_name)
     }
 }
 
