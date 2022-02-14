@@ -266,7 +266,7 @@ impl XCFrameworkBuilder {
                            self.crate_package.crate_dir.to_str().unwrap());
 
         // Skipping builder is important to eliminate the cyclic build process execution.
-        let command_code = format!("{}=true $HOME/.cargo/bin/cargo build -p {} --lib {} --target {} --target-dir {} --manifest-path {}",
+        let command_code = format!("{}=true $HOME/.cargo/bin/cargo build --locked -p {} --lib {} --target {} --target-dir {} --manifest-path {}",
                                    SKIP_UNIFFI_SWIFTPKG_GEN,
                                    self.crate_package.crate_name,
                                    if build_types == BuildType::Debug { "" } else { "--release" },
