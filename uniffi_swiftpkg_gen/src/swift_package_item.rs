@@ -92,7 +92,7 @@ impl SwiftPackageItem {
 
     #[allow(unused)]
     fn package_readme_md(&self) -> PathBuf {
-        self.swift_package_dir().join("../README.md")
+        self.swift_package_dir().join("README.md")
     }
 
     #[allow(unused)]
