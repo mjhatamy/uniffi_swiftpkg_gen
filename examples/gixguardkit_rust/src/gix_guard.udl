@@ -1,0 +1,81 @@
+namespace gix_guard {
+};
+
+
+[Error]
+enum GixTunnelErrorKind {
+  "Ok",
+  "Failed",
+  "NullInput",
+  "InvalidInput",
+  "InvalidInputLength"
+};
+
+interface PrivateKey {
+    [Throws=GixTunnelErrorKind]
+    constructor(sequence<u8> raw_value);
+
+    [Name=from_hex_key, Throws=GixTunnelErrorKind]
+    constructor(string hex_key);
+
+    [Name=from_base64_str, Throws=GixTunnelErrorKind]
+    constructor(string base64_key);
+
+    [Name=mock]
+    constructor();
+
+    PublicKey public_key();
+
+    sequence<u8> raw_value();
+
+    boolean is_eq([ByRef] PrivateKey other);
+
+    string base64_key();
+
+    string hex_key();
+};
+
+interface PublicKey {
+    [Throws=GixTunnelErrorKind]
+    constructor(sequence<u8> raw_value);
+
+    [Name=from_hex_key, Throws=GixTunnelErrorKind]
+    constructor(string hex_key);
+
+    [Name=from_base64_str, Throws=GixTunnelErrorKind]
+    constructor(string base64_key);
+
+    [Name=mock]
+    constructor();
+
+    sequence<u8> raw_value();
+
+    boolean is_eq([ByRef] PublicKey other);
+
+    string base64_key();
+
+    string hex_key();
+};
+
+interface PreSharedKey {
+    [Throws=GixTunnelErrorKind]
+    constructor(sequence<u8> raw_value);
+
+    [Name=from_hex_key, Throws=GixTunnelErrorKind]
+    constructor(string hex_key);
+
+    [Name=from_base64_str, Throws=GixTunnelErrorKind]
+    constructor(string base64_key);
+
+    [Name=mock]
+    constructor();
+
+    sequence<u8> raw_value();
+
+    boolean is_eq([ByRef] PreSharedKey other);
+
+    string base64_key();
+
+    string hex_key();
+};
+

@@ -1,0 +1,37 @@
+[package]
+name = "gix_guard_kit_rust"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+name="gix_guard_kit"
+crate-type = ["staticlib"]
+#crate-type = ["cdylib"]
+# cargo-features = ["strip"]
+#path = "src/lib.rs"
+
+[profile.dev]
+opt-level = 1
+
+[profile.test]
+opt-level = 1
+
+[profile.release]
+opt-level = "s"
+lto = "fat"
+debug = false
+codegen-units = 16
+
+[dependencies]
+rand = "0.8.4"
+uniffi_macros = { version = "0.16.0" }
+uniffi = { version = "0.16.0", features=["builtin-bindgen"]}
+
+[build-dependencies]
+uniffi_build = { version = "0.16.0", features = [ "builtin-bindgen" ] }
+uniffi_swiftpkg_gen = { path = "../../uniffi_swiftpkg_gen"}
+
+# standard crate data is left out
+[dev-dependencies]
+pretty_assertions = "1"
