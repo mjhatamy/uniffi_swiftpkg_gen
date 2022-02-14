@@ -42,9 +42,11 @@ impl SwiftPackageItem {
         self.resources_dir()
             .create_dir_if_not_exist("Unable to create Swift Package Resources directory.");
 
-        self.package_swift_uri().write_file(self.build_package_swift_file_contents(), true)
+        self.package_swift_uri()
+            .write_file(self.build_package_swift_file_contents(), true)
             .expect("Generating Swift Package file failed");
-        self.tests_swift_file_uri().write_file(self.build_tests_swift_file_contents(), false)
+        self.tests_swift_file_uri()
+            .write_file(self.build_tests_swift_file_contents(), false)
             .expect("Generating Swift Package Tests file failed");
 
         self.package_readme_md().write_file(self.build_readme_md_content(), false);
@@ -69,10 +71,11 @@ impl SwiftPackageItem {
             exit(1);
         }
 
+        // Copy XC Framework
         let status = self.command.args_stream([
-            format!("rm -rf {1}/{2}; cp -R {} {}/",
+            format!("rm -rf {1}/{2}; cp -R {0} {1}/",
                     self.framework_item.xc_frameworks_uri.to_str().unwrap(),
-                    self.resources_dir().to_str().unwrap(),
+                    self.swift_package_dir().to_str().unwrap(),
                     self.framework_item.xc_frameworks_uri.file_name().unwrap().to_str().unwrap())]);
         if !status.success() {
             eprintln!("{}{}", "Copying xc framework files failed. ".red(), status);
@@ -189,12 +192,12 @@ impl SwiftPackageItem {
                                      .expect("Unable to unwrap string"),
         ).as_str());
 
-        content.push_str(format!("{}.binaryTarget(name: \"lib_{}_xc\", path: \"./{}/{}\"),\n",
+        content.push_str(format!("{}.binaryTarget(name: \"lib_{}_xc\", path: \"./{}\"),\n",
                                  String::build_whitespaces(2),
                                  self.framework_item.swift_package_name.to_lowercase(),
-                                 diff_paths(&self.resources_dir(), &self.swift_package_dir())
-                                     .expect("Unable to get headers directory differential path.").to_str()
-                                     .expect("Unable to unwrap string"),
+                                 // diff_paths(&self.resources_dir(), &self.swift_package_dir())
+                                 //     .expect("Unable to get headers directory differential path.").to_str()
+                                 //     .expect("Unable to unwrap string"),
             self.framework_item.xc_frameworks_uri.file_name().unwrap().to_str().unwrap()
         ).as_str());
 
