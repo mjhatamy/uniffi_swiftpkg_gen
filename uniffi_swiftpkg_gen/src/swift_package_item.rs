@@ -283,6 +283,11 @@ impl SwiftPackageItem {
         content.push_str("# c.f. http://www.westwind.com/reference/os-x/invisibles.html\n");
         content.push_str("*.swp\n");
         content.push_str(r#"#
+
+*.swiftpm
+.swiftpm
+**/.swiftpm
+
 # *.lock - this is used and abused by many editors for many different things.
 #    For the main ones I use (e.g. Eclipse), it should be excluded
 #    from source-control, but YMMV.
